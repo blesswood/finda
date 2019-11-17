@@ -7,9 +7,10 @@ import sys
 from threading import Thread
 import os
 
-help = False
+numline = 1
+
 def helpmenu():
-	print('''                                   
+	print('''                                 
                                                   
  mmmmmmmm   mmmmmm   mmm   mm  mmmmm        mm    
  ##""""""   ""##""   ###   ##  ##"""##     ####   
@@ -28,7 +29,6 @@ def helpmenu():
 	print("\nI strongly recommend to use silent mode with '-f' option, because without it after successfull result may appear some extra wrong strings\n")
 	print("I want your feedback here:\n     Telegram: @kennnies \n     Jabber: explo1t@xmpp.jp")
 	print("\nThanks!")
-	help = True
 	sys.exit()
 
 sitename=''
@@ -36,7 +36,7 @@ try:
 	sitename = sys.argv[1]
 except IndexError:
 	helpmenu()
-	
+
 option = ''
 try:
 	option = sys.argv[2]
@@ -49,45 +49,54 @@ try:
 except IndexError:
 	pass
 
-t = False
+t = False #sys.exit() if found result
 
-def getpage(file, sitename, header):
+def ifsilent(num): #scrollbar
+    res = '\r%i/7339' % num
+    sys.stdout.write(res)
+    sys.stdout.flush()
+
+def getpage(file, sitename, header): #main func(active scan)
 	page = file.readline()
-	if not page:
-		print("Sorry, i couldn't find admin page on site ", sitename)
+	if not page: #if file isn't readable
+		print("Sorry, i couldn't read line from file findadb.py")
 		sys.exit()
-	siteresult = sitename + '/' + page
+	siteresult = sitename + '/' + page #get page addres
 	response = requests.get(siteresult[:-1], headers=header)
 	if not response:
-		dat = response.url + ' is wrong!'
+		dat = response.url + ' is wrong!' #check all links(idk who wants it...)
 		if con == False:
 			print(dat)
+		else:
+			global numline
+			ifsilent(numline)#count number of current line in silent mode
+			numline+=1
 	else:
+		print()
 		dat = str(response.url) + ' IS OK'
 		print(dat)
-		print('exiting')
 		global t
 		t = True
 
 con = False
 
-def silentmode():
+def silentmode(): #check for silent mode
 	if ('-s' in option) or ('-s' in fast):
 		global con
 		con = True
 
 sitename = str(sitename)
 if "-h" in sitename:
-		helpmenu()
+		helpmenu() #show help menu
 else:
 		sitename = 'http://' + sitename
 		file = open('/usr/local/bin/findadb.py')
 		header = {'user-agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.157 Safari/537.36'}
 		silentmode()
 		with file as f:
-			while True:
+			while True: #start scanning
 				try:
-					if('-f' in option) or ('-f' in fast):
+					if('-f' in option) or ('-f' in fast): #check for fast mode and create 5 threads if so
 						th1 = Thread(target=getpage, args=(file,sitename,header,))
 						th2 = Thread(target=getpage, args=(file,sitename,header,))
 						th3 = Thread(target=getpage, args=(file,sitename,header,))
@@ -103,13 +112,13 @@ else:
 						th3.join()
 						th4.join()
 						th5.join()
-					else:
+					else: #else start 1 thread
 						th1 = Thread(target=getpage, args=(file,sitename,header,))
 						th1.start()
 						th1.join()
-				except KeyboardInterrupt:
+				except KeyboardInterrupt: #in case of cancelling program
 					print('\nexiting')
 					sys.exit()
-				if t==True:
+				if t==True: #if success
 					sys.exit()
 			file.close()
