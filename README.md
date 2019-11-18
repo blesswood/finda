@@ -11,3 +11,8 @@ May require additional libraries:
 >pip3 install requests  
 
 Usage: finda.py -h
+
+Log:  
+Fixed performance(deleted unnecessary functions), KeyboardInterrupt error and output
+Added scrollbar and comments  
+Added proxy
