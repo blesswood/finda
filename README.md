@@ -11,3 +11,7 @@ May require additional libraries:
 >pip3 install requests  
 
 Usage: finda.py -h
+
+Log:  
+Added scrollbar and comments  
+Added proxy
