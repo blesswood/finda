@@ -8,24 +8,26 @@ from threading import Thread
 import os
 
 numline = 1
-
+isproxy = {"http":"0",
+"https":"0",
+}
 def helpmenu():
-	print('''                                 
-                                                  
- mmmmmmmm   mmmmmm   mmm   mm  mmmmm        mm    
- ##""""""   ""##""   ###   ##  ##"""##     ####   
- ##           ##     ##"#  ##  ##    ##    ####   
- #######      ##     ## ## ##  ##    ##   ##  ##  
- ##           ##     ##  #m##  ##    ##   ######  
- ##         mm##mm   ##   ###  ##mmm##   m##  ##m 
- ""         """"""   ""   """  """""     ""    "" 
-                                                  
+	print('''
+
+ mmmmmmmm   mmmmmm   mmm   mm  mmmmm        mm
+ ##""""""   ""##""   ###   ##  ##"""##     ####
+ ##           ##     ##"#  ##  ##    ##    ####
+ #######      ##     ## ## ##  ##    ##   ##  ##
+ ##           ##     ##  #m##  ##    ##   ######
+ ##         mm##mm   ##   ###  ##mmm##   m##  ##m
+ ""         """"""   ""   """  """""     ""    ""
+
                                       	by https://github.com/blesswood
 ''')
 	print("This is the active scanning, which may be forbidden in your country, please, use it to scan only your own server(s)\n")
 	print("Usage:")
 	print('finda.py -h[elp] -> this help')
-	print("finda.py URL [-s][ilent] [-f][ast] -> start scan")
+	print("finda.py URL [-s][ilent] [-f][ast] [-p][roxy] [ip:port]-> start scan")
 	print("\nI strongly recommend to use silent mode with '-f' option, because without it after successfull result may appear some extra wrong strings\n")
 	print("I want your feedback here:\n     Telegram: @kennnies \n     Jabber: explo1t@xmpp.jp")
 	print("\nThanks!")
@@ -61,8 +63,18 @@ def getpage(file, sitename, header): #main func(active scan)
 	if not page: #if file isn't readable
 		print("Sorry, i couldn't read line from file findadb.py")
 		sys.exit()
-	siteresult = sitename + '/' + page #get page addres
-	response = requests.get(siteresult[:-1], headers=header)
+	siteresult = sitename + '/' + page #get page address
+	if (isproxy["http"]!="0"):
+		try:
+			response = requests.get(siteresult[:-1], headers=header, proxies=isproxy)
+		except ConnectionResetError:
+			print("Cannot connect to proxy ", isproxy["http"])
+			sys.exit()
+		except TimeoutError:
+			print("Cannot connect to proxy ", isproxy["http"])
+			sys.exit()
+	else:
+		response = requests.get(siteresult[:-1], headers=header)
 	if not response:
 		dat = response.url + ' is wrong!' #check all links(idk who wants it...)
 		if con == False:
@@ -81,9 +93,17 @@ def getpage(file, sitename, header): #main func(active scan)
 con = False
 
 def silentmode(): #check for silent mode
-	if ('-s' in option) or ('-s' in fast):
-		global con
-		con = True
+	for i in range(2,5):
+		try:
+			if ('-s' in sys.argv[i]) or ('-s' in sys.argv[i]):
+				global con
+				con = True
+			elif('-p' in sys.argv[i]) or ('-p' in sys.argv[i]):
+				global isproxy
+				isproxy["http"] = "http://" + str(sys.argv[i+1])
+				isproxy["https"] = "https://" + str(sys.argv[i+1])
+		except IndexError:
+			pass
 
 sitename = str(sitename)
 if "-h" in sitename:
