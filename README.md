@@ -13,6 +13,7 @@ May require additional libraries:
 Usage: finda.py -h
 
 Log:  
+Added wizard mode, edited output in case of cancelling  
 Fixed performance(deleted unnecessary functions), KeyboardInterrupt error and output  
 Added scrollbar and comments  
 Added proxy
