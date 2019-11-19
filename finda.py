@@ -100,59 +100,113 @@ def mode(): #check for silent mode
 
 sitename = str(sitename)
 
-if "-h" in sitename:
-		helpmenu() #show help menu
-else:
-		sitename = 'http://' + sitename
-		file = open('/usr/local/bin/findadb.py')
-		header = {'user-agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.157 Safari/537.36'}
+def start():
+	global sitename
+	sitename = 'http://' + sitename
+	file = open('/usr/local/bin/findadb.py')
+	header = {'user-agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.157 Safari/537.36'}
+	if '-w' in sitename:
+		pass
+	else:
 		mode()
-		with file as f:
-			if(isfast==True):
-				while True: #start scanning
-					try: #check for fast mode and create 5 threads if so
-						th1 = Thread(target=getpage, args=(file,sitename,header,))
-						th1.start()
-						time.sleep(0.1)
+	with file as f:
+		if(isfast==True):
+			seconds = 4
+			while True: #start scanning
+				try: #check for fast mode and create 5 threads if so
+					th1 = Thread(target=getpage, args=(file,sitename,header,))
+					th1.start()
+					time.sleep(0.05)
 
-						th2 = Thread(target=getpage, args=(file,sitename,header,))
-						th2.start()
-						time.sleep(0.1)
+					th2 = Thread(target=getpage, args=(file,sitename,header,))
+					th2.start()
+					time.sleep(0.05)
 
-						th3 = Thread(target=getpage, args=(file,sitename,header,))
-						th3.start()
-						time.sleep(0.1)
+					th3 = Thread(target=getpage, args=(file,sitename,header,))
+					th3.start()
+					time.sleep(0.05)
 
-						th4 = Thread(target=getpage, args=(file,sitename,header,))
-						th4.start()
-						time.sleep(0.1)
+					th4 = Thread(target=getpage, args=(file,sitename,header,))
+					th4.start()
+					time.sleep(0.05)
 
-						th5 = Thread(target=getpage, args=(file,sitename,header,))
-						th5.start()
-						time.sleep(0.1)
+					th5 = Thread(target=getpage, args=(file,sitename,header,))
+					th5.start()
+					time.sleep(0.05)
 
-						th1.join()
-						th2.join()
-						th3.join()
-						th4.join()
-						th5.join()
-						if (t==True):
-							sys.exit()
-					except KeyboardInterrupt: #in case of cancelling program
-						print('\nExiting')
-						time.sleep(2.5)
+					th1.join()
+					th2.join()
+					th3.join()
+					th4.join()
+					th5.join()
+					if (t==True):
 						sys.exit()
-			else: #else start 1 thread
-				while True:
-					try:
-						th1 = Thread(target=getpage, args=(file,sitename,header,))
-						th1.start()
-						th1.join()
-						if(t==True):
-							sys.exit()
-					except KeyboardInterrupt: #in case of cancelling program
-						print('\nExiting')
-						sys.exit()
-				if t==True: #if success
+				except KeyboardInterrupt: #in case of cancelling program
+					for i in range(4):
+						sys.stdout.flush()
+					time.sleep(1)
+					sys.stdout.write('\n')
+					sys.stdout.flush()
 					sys.exit()
-			file.close()
+		else: #else start 1 thread
+			seconds = 3
+			while True:
+				try:
+					th1 = Thread(target=getpage, args=(file,sitename,header,))
+					th1.start()
+					th1.join()
+					if(t==True):
+						sys.exit()
+				except KeyboardInterrupt: #in case of cancelling program
+					sys.stdout.flush()
+					time.sleep(1)
+					sys.stdout.write('\n')
+					sys.stdout.flush()
+					sys.exit()
+			if t==True: #if success
+				sys.exit()
+		file.close()
+
+def startWizard():
+	print('''
+
+ mmmmmmmm   mmmmmm   mmm   mm  mmmmm        mm
+ ##""""""   ""##""   ###   ##  ##"""##     ####
+ ##           ##     ##"#  ##  ##    ##    ####
+ #######      ##     ## ## ##  ##    ##   ##  ##
+ ##           ##     ##  #m##  ##    ##   ######
+ ##         mm##mm   ##   ###  ##mmm##   m##  ##m
+ ""         """"""   ""   """  """""     ""    ""
+
+                                      	by https://github.com/blesswood
+''')
+	print("\nThis is the active scanning, which may be forbidden in your country, please, use it to scan only your own server(s)\n")
+	print("Enter site URL:", end = " ")
+	global sitename
+	try:
+		sitename = input()
+		print("Do u want fast scan?(y/n):", end = " ")
+		if 'y' in input():
+			global isfast
+			isfast = True
+			print("Do u want silent mode?(y/n):", end = " ")
+			if 'y' in input():
+				global con
+			con = True
+			print("Do u want to use proxy?(y/n):", end = " ")
+		if 'y' in input():
+			print('Enter proxy(ip:port)', end = " ")
+			proxy = input()
+			isproxy["http"] = "http://" + str(piroxy)
+			isproxy["https"] = "https://" + str(proxy)
+	except KeyboardInterrupt:
+		print()
+		sys.exit()
+	start()
+
+if "-h" in sitename:
+	helpmenu() #show help menu
+elif "-w" in sitename:
+	startWizard()
+else:
+	start()
