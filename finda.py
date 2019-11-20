@@ -108,11 +108,12 @@ sitename = str(sitename)
 header = {'user-agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.157 Safari/537.36'}
 
 def checktime(timeleft):
-	numpop = 300
-	if(numpop-countline==0):
+	global numpop
+	numpop = 100
+	if(numpop-countline<=0):
 		numpop = 7339
 	sys.stdout.flush()
-	res = '        time left: ' + str(round((time.time()-timeleft)*(300-countline)))
+	res = '        time left: ' + str(round((time.time()-timeleft)*(numpop-countline)))
 	sys.stdout.write(res)
 
 def start():
