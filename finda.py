@@ -12,6 +12,7 @@ numline = 1
 isproxy = {"http":"0",
 "https":"0",
 }
+
 def helpmenu():
 	print('''
 
@@ -47,8 +48,12 @@ def ifsilent(num): #scrollbar
 	sys.stdout.flush()
 	sys.stdout.write(res)
 
+countline = 0
+
 def getpage(file, sitename, header): #main func(active scan)
 	page = file.readline()
+	global countline
+	countline +=1
 	if not page: #if file isn't readable
 		print("Sorry, i couldn't read line from file findadb.py")
 		sys.exit()
@@ -102,6 +107,14 @@ def mode(): #check for silent mode
 sitename = str(sitename)
 header = {'user-agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.157 Safari/537.36'}
 
+def checktime(timeleft):
+	numpop = 300
+	if(numpop-countline==0):
+		numpop = 7339
+	sys.stdout.flush()
+	res = '        time left: ' + str(round((time.time()-timeleft)*(300-countline)))
+	sys.stdout.write(res)
+
 def start():
 	global sitename
 	sitename = 'http://' + sitename
@@ -114,31 +127,37 @@ def start():
 		if(isfast==True):
 			while True: #start scanning
 				try: #check for fast mode and create 5 threads if so
+					timeleft = time.time()
 					th1 = Thread(target=getpage, args=(file,sitename,header,))
 					th1.start()
 					time.sleep(0.05)
+					th1.join()
+
+					thtime = Thread(target=checktime, args=(timeleft,))
+					thtime.start()
+					thtime.join()
+					sys.stdout.write(' s')
 
 					th2 = Thread(target=getpage, args=(file,sitename,header,))
 					th2.start()
 					time.sleep(0.05)
+					th2.join()
 
 					th3 = Thread(target=getpage, args=(file,sitename,header,))
 					th3.start()
 					time.sleep(0.05)
+					th3.join()
 
 					th4 = Thread(target=getpage, args=(file,sitename,header,))
 					th4.start()
 					time.sleep(0.05)
+					th4.join()
 
 					th5 = Thread(target=getpage, args=(file,sitename,header,))
 					th5.start()
 					time.sleep(0.05)
-
-					th1.join()
-					th2.join()
-					th3.join()
-					th4.join()
 					th5.join()
+
 					if (t==True):
 						sys.exit()
 				except KeyboardInterrupt: #in case of cancelling program
@@ -188,9 +207,9 @@ def startWizard():
 		if 'y' in input():
 			global isfast
 			isfast = True
-			print("Do you want silent mode?(Y/n):", end = " ")
-			if 'y' in input():
-				global con
+		print("Do you want silent mode?(Y/n):", end = " ")
+		if 'y' in input():
+			global con
 			con = True
 			print("Do you want to use proxy?(Y/n):", end = " ")
 		if 'y' in input():
