@@ -171,9 +171,16 @@ def start():
 		else: #else start 1 thread
 			while True:
 				try:
+					timeleft = time.time()
 					th1 = Thread(target=getpage, args=(file,sitename,header,))
 					th1.start()
 					th1.join()
+					
+					thtime = Thread(target=checktime, args=(timeleft,))
+					thtime.start()
+					thtime.join()
+					sys.stdout.write(' s')
+					
 					if(t==True):
 						sys.exit()
 				except KeyboardInterrupt: #in case of cancelling program
