@@ -100,19 +100,18 @@ def mode(): #check for silent mode
 			pass
 
 sitename = str(sitename)
+header = {'user-agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.157 Safari/537.36'}
 
 def start():
 	global sitename
 	sitename = 'http://' + sitename
 	file = open('/usr/local/bin/findadb.py')
-	header = {'user-agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.157 Safari/537.36'}
 	if '-w' in sitename:
 		pass
 	else:
 		mode()
 	with file as f:
 		if(isfast==True):
-			seconds = 4
 			while True: #start scanning
 				try: #check for fast mode and create 5 threads if so
 					th1 = Thread(target=getpage, args=(file,sitename,header,))
@@ -150,7 +149,6 @@ def start():
 					sys.stdout.flush()
 					sys.exit()
 		else: #else start 1 thread
-			seconds = 3
 			while True:
 				try:
 					th1 = Thread(target=getpage, args=(file,sitename,header,))
@@ -186,19 +184,19 @@ def startWizard():
 	global sitename
 	try:
 		sitename = input()
-		print("Do u want fast scan?(y/n):", end = " ")
+		print("Do you want fast scan?(y/N):", end = " ")
 		if 'y' in input():
 			global isfast
 			isfast = True
-			print("Do u want silent mode?(y/n):", end = " ")
+			print("Do you want silent mode?(Y/n):", end = " ")
 			if 'y' in input():
 				global con
 			con = True
-			print("Do u want to use proxy?(y/n):", end = " ")
+			print("Do you want to use proxy?(Y/n):", end = " ")
 		if 'y' in input():
 			print('Enter proxy(ip:port)', end = " ")
 			proxy = input()
-			isproxy["http"] = "http://" + str(piroxy)
+			isproxy["http"] = "http://" + str(proxy)
 			isproxy["https"] = "https://" + str(proxy)
 	except KeyboardInterrupt:
 		print()
