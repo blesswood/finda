@@ -1,6 +1,6 @@
 #!usr/bin/env python3
 
-import sys
+import os
 
 r = "Do you really want to install this software? (y/n)"
 print(r, end=" ")
