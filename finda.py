@@ -212,7 +212,7 @@ def startWizard():
 		if 'y' in input():
 			global con
 			con = True
-			print("Do you want to use proxy?(Y/n):", end = " ")
+		print("Do you want to use proxy?(Y/n):", end = " ")
 		if 'y' in input():
 			print('Enter proxy(ip:port)', end = " ")
 			proxy = input()
