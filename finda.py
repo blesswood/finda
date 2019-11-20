@@ -109,7 +109,7 @@ header = {'user-agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHT
 
 def checktime(timeleft):
 	global numpop
-	numpop = 100
+	numpop = 300
 	if(numpop-countline<=0):
 		numpop = 7339
 	sys.stdout.flush()
