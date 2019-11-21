@@ -50,7 +50,7 @@ def ifsilent(num): #scrollbar
 
 countline = 0
 
-def getpage(file, sitename, header): #main func(active scan)
+def getpage(file, sitename, header, timestart): #main func(active scan)
 	page = file.readline()
 	global countline
 	countline +=1
@@ -59,6 +59,7 @@ def getpage(file, sitename, header): #main func(active scan)
 		sys.exit()
 	global t
 	siteresult = sitename + '/' + page #get page address
+	timeleft = time.time()
 	if (isproxy["http"]!="0"):
 		try:
 			response = requests.get(siteresult[:-1], headers=header, proxies=isproxy)
@@ -73,6 +74,7 @@ def getpage(file, sitename, header): #main func(active scan)
 	if not response:
 		if(t==False):
 			dat = response.url + ' is wrong!' #check all links(idk who wants to see it...)
+			checktime(timeleft)
 			if con == False:
 				print(dat)
 			else:
@@ -83,6 +85,9 @@ def getpage(file, sitename, header): #main func(active scan)
 		print()
 		dat = str(response.url) + ' IS OK'
 		print(dat)
+		timespent = 'Time spent: ' + str(round(time.time()-timestart)) + 's\n'
+		sys.stdout.write(timespent)
+		sys.stdout.flush()
 		t = True
 
 con = False
@@ -109,11 +114,11 @@ header = {'user-agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHT
 
 def checktime(timeleft):
 	global numpop
-	numpop = 300
+	numpop = 450
 	if(numpop-countline<=0):
 		numpop = 7339
 	sys.stdout.flush()
-	res = '        time left: ' + str(round((time.time()-timeleft)*(numpop-countline)))
+	res = '        time left: ' + str(round((time.time()-timeleft)*(numpop-countline))) + 's'
 	sys.stdout.write(res)
 
 def start():
@@ -126,37 +131,38 @@ def start():
 		mode()
 	with file as f:
 		if(isfast==True):
+			timestart = time.time()
 			while True: #start scanning
 				try: #check for fast mode and create 5 threads if so
 					timeleft = time.time()
-					th1 = Thread(target=getpage, args=(file,sitename,header,))
+					th1 = Thread(target=getpage, args=(file,sitename,header,timestart,))
 					th1.start()
 					time.sleep(0.05)
 					th1.join()
 
-					thtime = Thread(target=checktime, args=(timeleft,))
+					'''thtime = Thread(target=checktime, args=(timeleft,))
 					thtime.start()
 					thtime.join()
-					sys.stdout.write(' s')
+					sys.stdout.write(' s')'''
 
-					th2 = Thread(target=getpage, args=(file,sitename,header,))
+					th2 = Thread(target=getpage, args=(file,sitename,header,timestart))
 					th2.start()
-					time.sleep(0.05)
+					time.sleep(0.1)
 					th2.join()
 
-					th3 = Thread(target=getpage, args=(file,sitename,header,))
+					th3 = Thread(target=getpage, args=(file,sitename,header,timestart))
 					th3.start()
-					time.sleep(0.05)
+					time.sleep(0.1)
 					th3.join()
 
-					th4 = Thread(target=getpage, args=(file,sitename,header,))
+					th4 = Thread(target=getpage, args=(file,sitename,header,timestart))
 					th4.start()
-					time.sleep(0.05)
+					time.sleep(0.1)
 					th4.join()
 
-					th5 = Thread(target=getpage, args=(file,sitename,header,))
+					th5 = Thread(target=getpage, args=(file,sitename,header,timestart))
 					th5.start()
-					time.sleep(0.05)
+					time.sleep(0.1)
 					th5.join()
 
 					if (t==True):
@@ -168,21 +174,19 @@ def start():
 					sys.stdout.write('\n')
 					sys.stdout.flush()
 					sys.exit()
+
 		else: #else start 1 thread
+			timestart = time.time()
 			while True:
 				try:
 					timeleft = time.time()
-					th1 = Thread(target=getpage, args=(file,sitename,header,))
+					th1 = Thread(target=getpage, args=(file,sitename,header,timestart))
 					th1.start()
 					th1.join()
-					
-					thtime = Thread(target=checktime, args=(timeleft,))
-					thtime.start()
-					thtime.join()
-					sys.stdout.write(' s')
-					
+
 					if(t==True):
 						sys.exit()
+
 				except KeyboardInterrupt: #in case of cancelling program
 					sys.stdout.flush()
 					time.sleep(1)
