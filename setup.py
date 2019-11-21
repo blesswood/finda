@@ -13,9 +13,13 @@ if('y' in input()):
 		os.popen(symlink)
 		symlink = "sudo ln -s " + pwd +"/findadb.py"+" /usr/local/bin"
 		os.popen(symlink)
+		r = 'sudo cp findaman /usr/share/man/man1/finda.py.1'
+		os.popen(r)
+		r = 'sudo gzip /usr/share/man/man1/finda.py.1'
+		os.popen(r)
 #		if('failed' in res):
 #			os.system('sudo rm /usr/local/bin/cyth.py')
 #		os.system(symlink)
-		print('Success! Try: finda.py -h')
+		print('Success! Try: finda.py -h or man finda.py')
 	except SystemError:
 		print("Oops, try with sudo!")
