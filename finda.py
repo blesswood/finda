@@ -140,11 +140,6 @@ def start():
 					time.sleep(0.05)
 					th1.join()
 
-					'''thtime = Thread(target=checktime, args=(timeleft,))
-					thtime.start()
-					thtime.join()
-					sys.stdout.write(' s')'''
-
 					th2 = Thread(target=getpage, args=(file,sitename,header,timestart))
 					th2.start()
 					time.sleep(0.1)
