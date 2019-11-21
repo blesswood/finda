@@ -1,0 +1,33 @@
+.\" Manpage for finda.py
+.TH man 1 "21 November 2019" "0.4" "finda.py man page"
+.SH NAME
+finda.py \- script to find admin page on the web server
+.SH SYNOPSIS
+finda.py URL [OPTION]
+.SH DESCRIPTION
+finda.py is finding admin page on webserver(for example '127.0.0.1/phpmyadmin') by enumerating potential pages via active scanning(get requests)
+.SH OPTIONS
+-s, --silentmode
+  enable silent mode(hide all enumerated pages)
+
+-f, --fastmode
+  enable fastmode to check pages with 5 threads
+
+-p [ip:port], --proxy [ip:port]
+  enable proxy(http(s) only)
+
+-w, --wizard
+  start script in wizard mode(enter options step by step)
+
+-h, --help
+  show help menu
+
+.SH REPORTING BUGS
+You can send report bugs to blesswood@bk.ru or telegram: @kennnies
+.SH AUTHOR
+Written by Rustam G.(blesswood)
+
+.SH SEE ALSO
+https://github.com/blesswood/finda
+.SH NOTE
+Note that active scanning may be forbidden in your country, so use it only for your own server(s)
