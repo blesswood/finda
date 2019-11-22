@@ -13,6 +13,7 @@ May require additional libraries:
 Usage: finda.py -h or man finda.py  
 
 Log:  
+Edited requests lib to cfscrape  
 Added man page(see 'man finda.py') and time spent on work
 Added timer(at first it counts for 450 popular pages and then last 7k pages)
 Added wizard mode, edited output in case of cancelling  
