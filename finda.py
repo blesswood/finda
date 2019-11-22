@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 
-import requests
+import cfscrape #against cloudflare except requests
 import sys
 from threading import Thread
 import os
@@ -62,7 +62,8 @@ def getpage(file, sitename, header, timestart): #main func(active scan)
 	timeleft = time.time()
 	if (isproxy["http"]!="0"):
 		try:
-			response = requests.get(siteresult[:-1], headers=header, proxies=isproxy)
+			scraper = cfscrape.create_scraper()
+			response = scraper.get(siteresult[:-1], headers=header, proxies=isproxy)
 		except ConnectionResetError:
 			print("Cannot connect to proxy ", isproxy["http"])
 			sys.exit()
@@ -70,7 +71,8 @@ def getpage(file, sitename, header, timestart): #main func(active scan)
 			print("Cannot connect to proxy ", isproxy["http"])
 			sys.exit()
 	else:
-		response = requests.get(siteresult[:-1], headers=header)
+		scraper = cfscrape.create_scraper()
+		response = scraper.get(siteresult[:-1], headers=header)
 	if not response:
 		if(ifresult==False):
 			dat = response.url + ' is wrong!' #check all links(idk who wants to see it...)
