@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 
-import cfscrape #against cloudflare except requests
+import cfscrape #against cloudflare
 import sys
 from threading import Thread
 import os
@@ -39,7 +39,7 @@ sitename = ''
 try:
 	sitename = sys.argv[1]
 except IndexError:
-	helpmenu()
+	helpmenu() #if no arguments given
 
 ifresult = False #sys.exit() if found result(if True)
 
@@ -53,12 +53,12 @@ countline = 0
 def getpage(file, sitename, header, timestart): #main func(active scan)
 	page = file.readline()
 	global countline
-	countline +=1
+	countline += 1
 	if not page: #if file isn't readable
 		print("Sorry, i couldn't read line from file findadb.py")
 		sys.exit()
 	global ifresult
-	siteresult = sitename + '/' + page #get page address
+	siteresult = sitename + '/' + page #configure page address
 	timeleft = time.time()
 	if (isproxy["http"]!="0"):
 		try:
@@ -121,7 +121,7 @@ def checktime(timeleft):
 	if(numpop-countline<=0):
 		numpop = 7339 #if first 450 pages isn't available
 	sys.stdout.flush()
-	res = '        time left: ' + str(round((time.time()-timeleft)*(numpop-countline))) + 's ' #write time left
+	res = '        time left: %i s' % round((time.time()-timeleft)*(numpop-countline)) #write time left
 	sys.stdout.write(res)
 
 def start():
