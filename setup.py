@@ -1,5 +1,8 @@
 #!usr/bin/env python3
 
+#install cfscrape before setup
+#pip install cfscrape
+
 import os
 
 r = "Do you really want to install this software? (y/n)"
