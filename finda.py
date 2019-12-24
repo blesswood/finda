@@ -35,7 +35,6 @@ def helpmenu():
 	print("\nThanks!")
 	sys.exit()
 
-sitename = ''
 try:
 	sitename = sys.argv[1]
 except IndexError:
@@ -43,9 +42,36 @@ except IndexError:
 
 ifresult = False #sys.exit() if found result(if True)
 
-def ifsilent(num): #scrollbar
-	res = '\r%i/7339' % num #7339 - num of string in findadb
+class th(Thread):
+	def __init__(self, Val, num, timeleft):
+		Thread.__init__(self)
+		self.Val = Val
+		self.num = num
+		self.timeleft = timeleft
+	
+	def run(self):
+		try:
+			if self.Val==True:
+				ifsilent(self.num)
+			else:
+				checktime(self.timeleft)
+		except KeyboardInterrupt:
+			time.sleep(1)
+			sys.exit()
+		
+def checktime(timeleft):
+	numpop = 450 #number of popular admin pages in db
+	if(numpop-countline<=0):
+		numpop = 7339 #if first 450 pages isn't available
 	sys.stdout.flush()
+	res = '\r			time left: %s s' % round((time.time()-timeleft)*(numpop-countline)) #write time left
+	time.sleep(0.6)
+	sys.stdout.write(res)
+	
+
+def ifsilent(num): #scrollbar
+	sys.stdout.flush()
+	res = '\r%i/7339' % num #7339 - num of string in findadb
 	sys.stdout.write(res)
 
 countline = 0
@@ -59,7 +85,6 @@ def getpage(file, sitename, header, timestart): #main func(active scan)
 		sys.exit()
 	global ifresult
 	siteresult = sitename + '/' + page #configure page address
-	timeleft = time.time()
 	if (isproxy["http"]!="0"):
 		try:
 			scraper = cfscrape.create_scraper()
@@ -74,16 +99,16 @@ def getpage(file, sitename, header, timestart): #main func(active scan)
 		scraper = cfscrape.create_scraper()
 		response = scraper.get(siteresult[:-1], headers=header)
 	if not response:
+		global numline
 		if(ifresult==False):
-			dat = response.url + ' is wrong!' #check all links(idk who wants to see it...)
+			
 			if con == False:
+				dat = response.url + ' is wrong!' #check all links(idk who wants to see it...)
 				print(dat)
-				checktime(timeleft)
+				
 			else:
-				global numline
-				ifsilent(numline)#number of current line in silent mode
 				numline+=1
-				checktime(timeleft) #timeleft stop and count
+				th(True, numline, 0).start()#number of current line in silent mode
 	else:
 		print()
 		dat = str(response.url) + ' IS OK'
@@ -115,18 +140,9 @@ def mode(): #check for mode
 sitename = str(sitename)
 header = {'user-agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.157 Safari/537.36'}
 
-def checktime(timeleft):
-	global numpop
-	numpop = 450 #number of popular admin pages in db
-	if(numpop-countline<=0):
-		numpop = 7339 #if first 450 pages isn't available
-	sys.stdout.flush()
-	res = '        time left: %i s' % round((time.time()-timeleft)*(numpop-countline)) #write time left
-	sys.stdout.write(res)
-
 def start():
 	global sitename
-	if not 'http://' in sitename:
+	if not 'http' in sitename:
 		sitename = 'http://' + sitename
 	file = open('/usr/local/bin/findadb.py')
 	if '-w' in sitename:
@@ -139,30 +155,28 @@ def start():
 			while True: #start scanning
 				try: #check for fast mode and create 5 threads if so
 					timeleft = time.time() #timeleft start
-					th1 = Thread(target=getpage, args=(file,sitename,header,timestart,))
+					th1 = Thread(target=getpage, args=(f,sitename,header,timestart))
 					th1.start() #start thread with 4 args
-					time.sleep(0.05)
-					th1.join() #close thread
+					time.sleep(0.1)
 
-					th2 = Thread(target=getpage, args=(file,sitename,header,timestart))
+					if con == True:
+						th(False, numline, timeleft).start() #timeleft stop and count
+
+					th2 = Thread(target=getpage, args=(f,sitename,header,timestart))
 					th2.start()
 					time.sleep(0.1)
-					th2.join()
 
-					th3 = Thread(target=getpage, args=(file,sitename,header,timestart))
+					th3 = Thread(target=getpage, args=(f,sitename,header,timestart))
 					th3.start()
 					time.sleep(0.1)
-					th3.join()
 
-					th4 = Thread(target=getpage, args=(file,sitename,header,timestart))
+					th4 = Thread(target=getpage, args=(f,sitename,header,timestart))
 					th4.start()
 					time.sleep(0.1)
-					th4.join()
 
-					th5 = Thread(target=getpage, args=(file,sitename,header,timestart))
+					th5 = Thread(target=getpage, args=(f,sitename,header,timestart))
 					th5.start()
 					time.sleep(0.1)
-					th5.join()
 
 					if (ifresult==True):
 						sys.exit() #exit code
@@ -178,12 +192,17 @@ def start():
 			timestart = time.time()
 			while True:
 				try:
-					timeleft = time.time()
-					th1 = Thread(target=getpage, args=(file,sitename,header,timestart))
-					th1.start()
-					th1.join()
+					timeleft = time.time() #timeleft start
+					th1 = Thread(target=getpage, args=(f,sitename,header,timestart))
+					th1.start() #start thread with 4 args
+					time.sleep(0.1)
+
+					if con == True:
+						th(False, numline, timeleft).start() #timeleft stop and count
+						time.sleep(0.1)
 
 					if(ifresult==True):
+						time.sleep(1)
 						sys.exit()
 
 				except KeyboardInterrupt: #in case of cancelling work
