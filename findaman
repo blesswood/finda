@@ -5,13 +5,16 @@ finda.py \- script to find admin page on the web server
 .SH SYNOPSIS
 finda.py URL [OPTION]
 .SH DESCRIPTION
-finda.py is finding admin page on webserver(for example '127.0.0.1/phpmyadmin') by enumerating potential pages via active scanning(get requests)
+finda.py is finding admin page (or any other) on webserver(for example '127.0.0.1/phpmyadmin') by enumerating potential pages via active scanning(get requests)
 .SH OPTIONS
 -s, --silentmode
   enable silent mode(hide all enumerated pages)
 
 -f, --fastmode
   enable fastmode to check pages with 5 threads
+
+-l,
+  use custom wordlist to scan (bugs happens)
 
 -p [ip:port], --proxy [ip:port]
   enable proxy(http(s) only)

@@ -19,11 +19,8 @@ if('y' in input()):
 		os.popen(r)
 		r = 'sudo gzip /usr/share/man/man1/finda.py.1'
 		os.popen(r)
-#		if('failed' in res):
-#			os.system('sudo rm /usr/local/bin/cyth.py')
-#		os.system(symlink)
-		print('Success! Try: finda.py -h or man finda.py')
-		print('Uninstall: sudo python3 uninstall.py')
+		print('Success! Try: finda.py -h or man finda.py\n')
+		print('If you decide to uninstall: sudo python3 uninstall.py\n')
 	except SystemError:
 		print("Oops, try with sudo!")
 	except KeyboardInterrupt:
