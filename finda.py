@@ -8,6 +8,8 @@ from threading import Thread
 import os
 import time
 
+os.system('clear')
+
 numline = 1
 isproxy = {"http":"0",
 "https":"0",
@@ -30,9 +32,9 @@ def helpmenu():
 	print("Usage:")
 	print("finda.py -h[elp] -> this help")
 	print("finda.py -w[izard] -> wizard mode")
-	print("finda.py URL [-s][ilent] [-f][ast] [-p][roxy] [ip:port] -> scan options\n")
-	print("I want your feedback here:\n     Telegram: @kennnies \n     Jabber: explo1t@xmpp.jp")
-	print("\nThanks!")
+	print("finda.py URL [-s][ilent] [-f][ast] [-p][roxy] [ip:port] [-l] [custom_wordlist]-> scan options\n")
+	print("I want your feedback here:\n     Telegram: @kennnies \n     Jabber: explo1t@xmpp.jp\n")
+	print("Thanks!")
 	sys.exit()
 
 try:
@@ -41,6 +43,8 @@ except IndexError:
 	helpmenu() #if no arguments given
 
 ifresult = False #sys.exit() if found result(if True)
+
+file = open('/usr/local/bin/findadb.py')
 
 class th(Thread):
 	def __init__(self, Val, num, timeleft):
@@ -71,17 +75,16 @@ def checktime(timeleft):
 
 def ifsilent(num): #scrollbar
 	sys.stdout.flush()
-	res = '\r%i/7339' % num #7339 - num of string in findadb
+	res = '\r%i/max' % num # num of string in wordlist
 	sys.stdout.write(res)
 
 countline = 0
 
-def getpage(file, sitename, header, timestart): #main func(active scan)
+def getpage(file, sitename, header, timestart): #active scan
 	page = file.readline()
 	global countline
 	countline += 1
 	if not page: #if file isn't readable
-		print("Sorry, i couldn't read line from file findadb.py")
 		sys.exit()
 	global ifresult
 	siteresult = sitename + '/' + page #configure page address
@@ -108,7 +111,7 @@ def getpage(file, sitename, header, timestart): #main func(active scan)
 				
 			else:
 				numline+=1
-				th(True, numline, 0).start()#number of current line in silent mode
+				th(True, numline, 0).start()#number of current line in silent mode	
 	else:
 		print()
 		dat = str(response.url) + ' IS OK'
@@ -120,9 +123,10 @@ def getpage(file, sitename, header, timestart): #main func(active scan)
 
 con = False #if silent mode is enabled, become True
 isfast = False #if fast mode is enabled, become True
+ifcustom = False
 
 def mode(): #check for mode
-	for i in range(2,5):
+	for i in range(1,7):
 		try:
 			if ('-s' in sys.argv[i]): # check for '-s' option (silentmode)
 				global con
@@ -134,6 +138,11 @@ def mode(): #check for mode
 			elif('-f' in sys.argv[i]): #check for '-f' option (fastmode)
 				global isfast
 				isfast = True
+			elif('-l' in sys.argv[i]): #check for '-l' option (custom wordlist)
+				global file
+				file = open(sys.argv[i+1])
+				global ifcustom
+				ifcustom = True
 		except IndexError: # if no options given
 			pass
 
@@ -144,7 +153,6 @@ def start():
 	global sitename
 	if not 'http' in sitename:
 		sitename = 'http://' + sitename
-	file = open('/usr/local/bin/findadb.py')
 	if '-w' in sitename:
 		pass #escape mode checking for wizard
 	else:
@@ -159,7 +167,7 @@ def start():
 					th1.start() #start thread with 4 args
 					time.sleep(0.1)
 
-					if con == True:
+					if con == True and ifcustom == False:
 						th(False, numline, timeleft).start() #timeleft stop and count
 
 					th2 = Thread(target=getpage, args=(f,sitename,header,timestart))
@@ -178,7 +186,8 @@ def start():
 					th5.start()
 					time.sleep(0.1)
 
-					if (ifresult==True):
+					if (ifresult==True and ifcustom==False):
+						break
 						sys.exit() #exit code
 				except KeyboardInterrupt: #in case of cancelling work by user
 					for i in range(4):
@@ -197,13 +206,14 @@ def start():
 					th1.start() #start thread with 4 args
 					time.sleep(0.1)
 
-					if con == True:
+					if con == True and ifcustom == False:
 						th(False, numline, timeleft).start() #timeleft stop and count
 						time.sleep(0.1)
 
-					if(ifresult==True):
+					if(ifresult==True and ifcustom==False):
 						time.sleep(1)
 						sys.exit()
+						break
 
 				except KeyboardInterrupt: #in case of cancelling work
 					sys.stdout.flush()
@@ -211,7 +221,7 @@ def start():
 					sys.stdout.write('\n')
 					sys.stdout.flush()
 					sys.exit()
-			if ifresult==True: #if success
+			if ifresult==True and ifcustom==False: #if success
 				sys.exit()
 		file.close()
 
@@ -234,19 +244,24 @@ def startWizard():
 	try:
 		sitename = input() #enter link
 		print("Do you want fast scan?(y/N):", end = " ")
-		if 'y' in input(): #if user enabled fastmode
+		if 'y' in input().lower(): #if user enabled fastmode
 			global isfast
 			isfast = True
 		print("Do you want silent mode?(Y/n):", end = " ")
-		if 'y' in input(): #if user enabled silentmode
+		if 'y' in input().lower(): #if user enabled silentmode
 			global con
 			con = True
 		print("Do you want to use proxy(http(s))?(Y/n):", end = " ")
-		if 'y' in input(): #if user want to use proxy
+		if 'y' in input().lower(): #if user want to use proxy
 			print('Enter proxy(ip:port)', end = " ")
 			proxy = input()
 			isproxy["http"] = "http://" + str(proxy) #write inputed proxy to isproxy
 			isproxy["https"] = "https://" + str(proxy)
+		print("Use custom wordlist?:(y/N)", end = " ")
+		if ('y') in input().lower():
+			global file
+			file = open(input('Enter custom wordlist: '))
+		
 	except KeyboardInterrupt:
 		print()
 		sys.exit()
